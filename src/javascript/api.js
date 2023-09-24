@@ -36,6 +36,9 @@ async function postToApi(addUrl, objectToAdd) {
         const response = await fetch(addUrl,
             {
                 method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(objectToAdd)
             });
         const data = response.json();
@@ -79,30 +82,89 @@ async function deleteFromApi(deleteUrl) {
 /*User Registartion and Login Methods */
 
 export async function userLogin(userName, passWord) {
-    try {
-        let response = await axios.post(loginUserURL, {
+    const userObject = {
+        user: {
             username: userName,
             password: passWord
-        });
-        return response;
-    } catch (e) {
-        const error = e.response;
-        console.error(error);
+        }
     }
+    return postToApi(loginUserURL, userObject);
+    // try {
+    //     let response = await axios.post(loginUserURL, {
+    //         username: userName,
+    //         password: passWord
+    //     });
+    //     return response;
+    // } catch (e) {
+    //     const error = e.response;
+    //     console.error(error);
+    // }
 }
 
 export async function addNewUser(userName, passWord) {
-    const userObject = {user: {
-        username: userName,
-        password: passWord
-    }}
-    return addToApi(getAllUsersUrl, userObject);
+    const userObject = {
+        user: {
+            username: userName,
+            password: passWord
+        }
+    }
+    return postToApi(registerUserURL, userObject);
+    // try {
+    //     const response = await fetch(
+    //       `${registerUserURL}/users/register`, {
+    //       method: "POST",
+    //       headers: {
+    //         'Content-Type': 'application/json'
+    //       },
+    //       body: JSON.stringify({
+    //         user: {
+    //           username: 'superman27',
+    //           password: 'krypt0n0rbust'
+    //         }
+    //       })
+    //     });
+    //     const result = await response.json();
+    // You can log ▲▲▲ the result
+    // here ▼▼▼ to view the json object before returning it
+    //     console.log(result)
+    //     return result
+    //   } catch (err) {
+    //     console.error(err);
+    //   }
 }
+
+export function checkIfLoggedIn(userName) {
+    const loginToken = Cookies.get(`loginToken`);
+    // console.log(`Login Token: ${loginToken}`);
+    // console.log(userName);
+    if (loginToken == undefined) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}
+
+export function deleteLoginCookie() {
+    try {
+        Cookies.remove("loginToken");
+    }
+    catch (e) {
+        Console.log("The cookie does not exist!");
+    }
+}
+
+export function completePostSignin(setLoginFormVisible, setSignupFormVisible, setLoggedInVisible) {
+    setLoginFormVisible(false);
+    setSignupFormVisible(false);
+    setLoggedInVisible(true);
+}
+
 
 ////////////////
 /*Test Methods*/
 
-export async function getTestMe(){
+export async function getTestMe() {
     return getFromApi(getTestUserURL);
 }
 
